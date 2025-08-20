@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+# --- Locales / timezone / keymap (déjà en chroot)
+ln -sf /usr/share/zoneinfo/Canada/Eastern /etc/localtime
+hwclock --systohc
+
+# Locale
+sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
+sed -i 's/^#fr_CA.UTF-8/fr_CA.UTF-8/' /etc/locale.gen
+locale-gen
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
+
+# Console keymap
+echo "KEYMAP=cf" > /etc/vconsole.conf
+
+# Hostname
+echo "nixilium" > /etc/hostname
+
+# --- Network + sudo + bootloader
+pacman -S --noconfirm grub efibootmgr sudo networkmanager nano git base-devel
+systemctl enable NetworkManager
+systemctl start NetworkManager  # <--- start it right now
+
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+grub-mkconfig -o /boot/grub/grub.cfg
+
+# --- Root password
+echo "==> Please set ROOT password"
+passwd
+
+# --- Create user and sudo access
+useradd -m -G wheel,audio,video,network nixilium
+echo "==> Please set password for user nixilium"
+passwd nixilium
+
+echo 'nixilium ALL=(ALL:ALL) ALL' >> /etc/sudoers
+
+# --- Desktop (XFCE + LightDM)
+pacman -S --noconfirm xfce4 xfce4-goodies lightdm lightdm-gtk-greeter
+systemctl enable lightdm
+
+# --- Yay install (AUR helper)
+cd /tmp
+git clone https://aur.archlinux.org/yay-bin.git
+chown -R nixilium:nixilium yay-bin
+su - nixilium -c "cd /tmp/yay-bin && makepkg -si --noconfirm"
+
+# --- Themes + Apps (under user)
+su - nixilium -c "
+yay -S --noconfirm arc-gtk-theme papirus-icon-theme
+yay -S --noconfirm steam discord spotify-launcher
+"
+
+echo '==> Post-install finished. Reboot and login as nixilium'
