@@ -1,54 +1,68 @@
 #!/usr/bin/env bash
 
-# --- Locales / timezone / keymap (déjà en chroot)
+# --------------------------------------------------------------------
+#  Arch Linux Post-Install Script (auto-chroot version)
+#  => assumes partitions are ALREADY created and mounted to /mnt
+# --------------------------------------------------------------------
+
+# Check that /mnt is mounted
+if ! mountpoint -q /mnt; then
+  echo "⚠️  /mnt is not mounted.  Please mount your target partition to /mnt before running this script."
+  exit 1
+fi
+
+echo "==> Entering chroot..."
+arch-chroot /mnt /bin/bash << 'EOF'
+set -e
+
+# -- Timezone and locale ------------------------------------------------------
 ln -sf /usr/share/zoneinfo/Canada/Eastern /etc/localtime
 hwclock --systohc
 
-# Locale
 sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
 sed -i 's/^#fr_CA.UTF-8/fr_CA.UTF-8/' /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
-# Console keymap
 echo "KEYMAP=cf" > /etc/vconsole.conf
 
-# Hostname
+# -- Hostname -----------------------------------------------------------------
 echo "nixilium" > /etc/hostname
 
-# --- Network + sudo + bootloader
+# -- Boot + Network + Required Tools -----------------------------------------
 pacman -S --noconfirm grub efibootmgr sudo networkmanager nano git base-devel
 systemctl enable NetworkManager
-systemctl start NetworkManager  # <--- start it right now
+systemctl start NetworkManager
 
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 
-# --- Root password
-echo "==> Please set ROOT password"
+# -- Root password ------------------------------------------------------------
+echo "==> Set ROOT password"
 passwd
 
-# --- Create user and sudo access
+# -- User + sudo --------------------------------------------------------------
 useradd -m -G wheel,audio,video,network nixilium
-echo "==> Please set password for user nixilium"
+echo "==> Set password for user nixilium"
 passwd nixilium
 
 echo 'nixilium ALL=(ALL:ALL) ALL' >> /etc/sudoers
 
-# --- Desktop (XFCE + LightDM)
+# -- Desktop ------------------------------------------------------------------
 pacman -S --noconfirm xfce4 xfce4-goodies lightdm lightdm-gtk-greeter
 systemctl enable lightdm
 
-# --- Yay install (AUR helper)
+# -- Yay (AUR helper) ---------------------------------------------------------
 cd /tmp
 git clone https://aur.archlinux.org/yay-bin.git
 chown -R nixilium:nixilium yay-bin
 su - nixilium -c "cd /tmp/yay-bin && makepkg -si --noconfirm"
 
-# --- Themes + Apps (under user)
+# -- Themes + apps (as nixilium) ----------------------------------------------
 su - nixilium -c "
 yay -S --noconfirm arc-gtk-theme papirus-icon-theme
 yay -S --noconfirm steam discord spotify-launcher
 "
 
-echo '==> Post-install finished. Reboot and login as nixilium'
+echo '✅ Post-installation complete. Reboot and login as nixilium'
+EOF
