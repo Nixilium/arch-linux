@@ -1,14 +1,6 @@
 #!/usr/bin/env bash
+# Arch Linux Post-Install Script  (run from INSIDE chroot)
 
-# --------------------------------------------------------------------
-#  Arch Linux Post-Install Script (auto-chroot version)
-#  => assumes partitions are ALREADY created and mounted to /mnt
-# --------------------------------------------------------------------
-
-# Check that /mnt is mounted
-
-echo "==> Entering chroot..."
-arch-chroot /mnt /bin/bash << 'EOF'
 set -e
 
 # -- Timezone and locale ------------------------------------------------------
@@ -48,17 +40,16 @@ echo 'nixilium ALL=(ALL:ALL) ALL' >> /etc/sudoers
 pacman -S --noconfirm xfce4 xfce4-goodies lightdm lightdm-gtk-greeter
 systemctl enable lightdm
 
-# -- Yay (AUR helper) ---------------------------------------------------------
+# -- Yay (AUR)
 cd /tmp
 git clone https://aur.archlinux.org/yay-bin.git
 chown -R nixilium:nixilium yay-bin
 su - nixilium -c "cd /tmp/yay-bin && makepkg -si --noconfirm"
 
-# -- Themes + apps (as nixilium) ----------------------------------------------
+# -- Themes + Apps
 su - nixilium -c "
 yay -S --noconfirm arc-gtk-theme papirus-icon-theme
 yay -S --noconfirm steam discord spotify-launcher
 "
 
 echo '✅ Post-installation complete. Reboot and login as nixilium'
-EOF
