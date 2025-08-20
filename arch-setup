@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Arch Linux Post-Install Script  (run from INSIDE chroot)
+# ---------------------------------------------------------
 
 set -e
 
@@ -40,17 +41,16 @@ echo 'nixilium ALL=(ALL:ALL) ALL' >> /etc/sudoers
 pacman -S --noconfirm xfce4 xfce4-goodies lightdm lightdm-gtk-greeter firefox
 systemctl enable lightdm
 
-# -- Yay (AUR)
+# -- Yay (AUR helper)
 cd /tmp
 git clone https://aur.archlinux.org/yay-bin.git
 chown -R nixilium:nixilium yay-bin
 su - nixilium -c "cd /tmp/yay-bin && makepkg -si --noconfirm"
 
-# -- Themes + Apps
+# -- Theme (Arc + Papirus)
 su - nixilium -c "
 yay --noconfirm --answerdiff None --answerclean None -S arc-gtk-theme papirus-icon-theme
-yay --noconfirm --answerdiff None --answerclean None -S steam discord spotify-launcher
-"
 "
 
-echo '✅ Post-installation complete. Reboot and login as nixilium'
+echo "✅ Base install complete. Rebooting into XFCE..."
+reboot
