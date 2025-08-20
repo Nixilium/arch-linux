@@ -47,10 +47,5 @@ git clone https://aur.archlinux.org/yay-bin.git
 chown -R nixilium:nixilium yay-bin
 su - nixilium -c "cd /tmp/yay-bin && makepkg -si --noconfirm"
 
-# -- Theme (Arc + Papirus)
-su - nixilium -c "
-yay --noconfirm --answerdiff None --answerclean None -S arc-gtk-theme papirus-icon-theme
-"
-
 echo "✅ Base install complete. Rebooting into XFCE..."
 reboot
