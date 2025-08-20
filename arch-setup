@@ -6,10 +6,6 @@
 # --------------------------------------------------------------------
 
 # Check that /mnt is mounted
-if ! mountpoint -q /mnt; then
-  echo "⚠️  /mnt is not mounted.  Please mount your target partition to /mnt before running this script."
-  exit 1
-fi
 
 echo "==> Entering chroot..."
 arch-chroot /mnt /bin/bash << 'EOF'
