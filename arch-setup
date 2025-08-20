@@ -37,7 +37,7 @@ passwd nixilium
 echo 'nixilium ALL=(ALL:ALL) ALL' >> /etc/sudoers
 
 # -- Desktop ------------------------------------------------------------------
-pacman -S --noconfirm xfce4 xfce4-goodies lightdm lightdm-gtk-greeter
+pacman -S --noconfirm xfce4 xfce4-goodies lightdm lightdm-gtk-greeter firefox
 systemctl enable lightdm
 
 # -- Yay (AUR)
@@ -48,8 +48,9 @@ su - nixilium -c "cd /tmp/yay-bin && makepkg -si --noconfirm"
 
 # -- Themes + Apps
 su - nixilium -c "
-yay -S --noconfirm arc-gtk-theme papirus-icon-theme
-yay -S --noconfirm steam discord spotify-launcher
+yay --noconfirm --answerdiff None --answerclean None -S arc-gtk-theme papirus-icon-theme
+yay --noconfirm --answerdiff None --answerclean None -S steam discord spotify-launcher
+"
 "
 
 echo '✅ Post-installation complete. Reboot and login as nixilium'
