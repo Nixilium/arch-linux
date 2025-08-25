@@ -1,0 +1,103 @@
+{
+  // ====== Bar basics ======
+  "layer": "top",
+  "position": "top",
+  "height": 30,
+  "margin": "6px 8px 0 8px",   // small gap from screen edges
+  "spacing": 10,               // space between modules
+  "gtk-layer-shell": true,
+
+  // ====== Module layout ======
+  "modules-center": ["clock"],
+  "modules-right": ["pulseaudio", "network", "cpu", "memory", "tray", "custom/power"],
+  "modules-left": [
+    "custom/spotify-prev",
+    "custom/spotify",
+    "custom/spotify-next",
+    "workspaces",
+    "window"
+  ],
+
+"custom/spotify-prev": {
+  "format": "⏮",
+  "tooltip": "Previous",
+  "on-click": "playerctl previous",
+  "interval": 2,
+  "exec-if": "playerctl -l | grep -q ."
+},
+"custom/spotify": {
+  "exec": "~/.config/waybar/scripts/spotify_mpris.sh",
+  "return-type": "json",
+  "interval": 1,
+  "format": "{text}",
+  "escape": true,
+  "on-click": "~/.config/waybar/scripts/spotify_focus.sh",
+  "on-click-middle": "playerctl play-pause",
+  "on-scroll-up": "playerctl position 5+",
+  "on-scroll-down": "playerctl position 5-"
+},
+"custom/spotify-next": {
+  "format": "⏭",
+  "tooltip": "Next",
+  "on-click": "playerctl next",
+  "interval": 2,
+  "exec-if": "playerctl -l | grep -q ."
+},
+
+
+  // ====== Audio (PipeWire via Pulse) ======
+  "pulseaudio": {
+    "format": "{volume}% ",
+    "format-muted": "",
+    "on-click": "bash -lc 'pavucontrol'"
+  },
+
+  // ====== Clock (month popup, not full-year) ======
+
+"clock": {
+  "interval": 60,
+  "format": "{:%a %d %b  %H:%M}",
+  "tooltip": true, // <— ensure tooltip is on
+  "tooltip-format": "<tt><small>{calendar}</small></tt>",
+  "calendar": {
+    "mode": "month",
+    "weeks-pos": "right",
+    "on-scroll": 1,
+    "format": {
+      "months": "<b>{}</b>",
+      "weekdays": "<span weight='bold'>{}</span>",
+      "today": "<span background='#a5d6ff' foreground='#000' weight='bold'>{}</span>"
+    }
+  },
+  "actions": {
+    "on-click-right": "mode",     // toggle month/year on right-click
+    "on-scroll-up": "shift_down",   // scroll up = next month
+    "on-scroll-down": "shift_up"// scroll down = prev month
+   }
+  },
+
+
+  // ====== Network (single module handles wifi/ethernet) ======
+  "network": {
+    "tooltip": true,
+    "format-wifi": "  {essid} {signalStrength}%",
+    "format-ethernet": "  {ifname}",
+    "format-disconnected": ""
+  },
+
+  // ====== CPU / RAM ======
+  "cpu":    { "format": " {usage}%" },
+  "memory": { "format": " {percentage}%" },
+
+  // ====== System tray ======
+  "tray": { "spacing": 8 },
+
+  // ====== Power button ======
+  "custom/power": {
+    "format": "",
+    "tooltip": "Power menu",
+    "on-click": "wlogout || hyprctl dispatch exit",
+    "on-click-right": "systemctl reboot",
+    "on-click-middle": "systemctl poweroff -i"
+  }
+}
