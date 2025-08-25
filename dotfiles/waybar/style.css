@@ -1,0 +1,65 @@
+/* Base */
+* {
+  font-family: JetBrainsMono, monospace;
+  font-size: 13px;
+  min-height: 0;
+}
+
+/* Bar */
+window#waybar {
+  background: rgba(28, 28, 30, 0.92);
+  color: #e6e6e6;
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+
+/* Workspaces */
+#workspaces button {
+  padding: 4px 10px;
+  margin-right: 6px;
+  border-radius: 8px;
+  background: transparent;
+  color: #cfcfcf;
+}
+#workspaces button.focused {
+  background: #88c0d0;
+  color: #1f2933;
+  font-weight: 600;
+}
+#workspaces button.urgent {
+  background: #d08770;
+  color: #1f2933;
+}
+
+/* Modules */
+#clock,
+#pulseaudio,
+#network,
+#cpu,
+#memory,
+#tray,
+#custom-power {
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: transparent;
+}
+
+/* Subtle hover (no eye candy, just feedback) */
+#clock:hover,
+#pulseaudio:hover,
+#network:hover,
+#cpu:hover,
+#memory:hover,
+#custom-power:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+#custom-spotify-prev, #custom-spotify-next, #custom-spotify { padding: 0 8px; }
+
+#custom-spotify-prev:hover, #custom-spotify-next:hover, #custom-spotify:hover {
+  background: rgba(255,255,255,0.06);
+  border-radius: 8px;
+}
+
+#custom-spotify.playing { color: #1DB954; font-weight: 600; }
+#custom-spotify.paused  { opacity: 0.75; }
